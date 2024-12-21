@@ -1,16 +1,16 @@
-import { gql } from '@apollo/server';
+import { gql } from 'graphql-tag';
 
-export const typeDefs = gql`
+const typeDefs = gql`
   type User {
-    _id: ID
-    username: String
-    email: String
-    bookCount: Int
+    _id: ID!
+    username: String!
+    email: String!
     savedBooks: [Book]
+    bookCount: Int
   }
 
   type Book {
-    bookId: String
+    bookId: String!
     authors: [String]
     description: String
     title: String
@@ -23,33 +23,31 @@ export const typeDefs = gql`
     user: User
   }
 
+  input BookInput {
+    bookId: String!
+    authors: [String]
+    description: String
+    title: String
+    image: String
+    link: String
+  }
+
   input UserInput {
     username: String!
     email: String!
     password: String!
   }
 
-  input BookInput {
-    bookId: String!
-    authors: [String]!
-    description: String!
-    title: String!
-    image: String!
-    link: String!
-  }
-
   type Query {
     me: User
-    users: [User]
-    user(username: String!): User
-    books: [Book]
-    book(bookId: ID!): Book
   }
 
   type Mutation {
-    login(email: String!, password: String!): Auth
     addUser(input: UserInput!): Auth
+    login(email: String!, password: String!): Auth
     saveBook(input: BookInput!): User
-    removeBook(bookId: ID!): User
+    removeBook(bookId: String!): User
   }
 `;
+
+export default typeDefs;
