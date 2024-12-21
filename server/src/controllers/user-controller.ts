@@ -19,19 +19,19 @@ export const getSingleUser = async (req: Request, res: Response) => {
 
 // create a user, sign a token, and send it back (to client/src/components/SignUpForm.js)
 export const createUser = async (req: Request, res: Response) => {
-  const user = await User.create(req.body);
+  const user = await User.create(req.body) as { _id: string, username: string, email: string };
 
   if (!user) {
     return res.status(400).json({ message: 'Something is wrong!' });
   }
-  const token = signToken(user.username, user.password, user._id);
+  const token = signToken({ _id: user._id.toString(), username: user.username, email: user.email });
   return res.json({ token, user });
 };
 
 // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
 // {body} is destructured req.body
 export const login = async (req: Request, res: Response) => {
-  const user = await User.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
+  const user = await User.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] }) as { _id: string, username: string, email: string, isCorrectPassword: (password: string) => Promise<boolean> };
   if (!user) {
     return res.status(400).json({ message: "Can't find this user" });
   }
@@ -41,7 +41,7 @@ export const login = async (req: Request, res: Response) => {
   if (!correctPw) {
     return res.status(400).json({ message: 'Wrong password!' });
   }
-  const token = signToken(user.username, user.password, user._id);
+  const token = signToken({ _id: user._id.toString(), username: user.username, email: user.email });
   return res.json({ token, user });
 };
 
