@@ -1,11 +1,12 @@
 import express from 'express';
-import path from 'node:path';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import type { Request, Response } from 'express';
+import cors from 'cors'; // Import cors
+import bodyParser from 'body-parser';
+import path from 'node:path';
+import db from './config/connection.js';
 import { typeDefs, resolvers } from './schemas/index.js';
 import { authenticateToken } from './utils/auth.js';
-import db from './config/connection.js';
 
 const server = new ApolloServer({
   typeDefs,
@@ -14,33 +15,26 @@ const server = new ApolloServer({
 
 const startApolloServer = async () => {
   await server.start();
-  await db(); // Connect to the database
+  await db();
 
-  const PORT = process.env.PORT || 3001;
   const app = express();
+  const PORT = process.env.PORT || 3001;
 
-  // Middleware to parse incoming requests
-  app.use(express.urlencoded({ extended: false }));
-  app.use(express.json());
+  // Use CORS middleware with specific settings
+  app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-  // Apply GraphQL middleware with context for authentication
-  app.use(
-    '/graphql',
-    expressMiddleware(server, {
-      context: ({ req }) => authenticateToken({ req }),
-    })
-  );
+  app.use(bodyParser.json());
+  app.use('/graphql', expressMiddleware(server, {
+    context: authenticateToken,
+  }));
 
-  // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/dist')));
-
-    app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(__dirname, '../client/build/index.html'));
     });
   }
 
-  // Start the server
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}!`);
     console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
