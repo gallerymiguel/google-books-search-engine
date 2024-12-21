@@ -1,30 +1,50 @@
+import express from 'express';
+import path from 'node:path';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import express from 'express';
-import { typeDefs } from './schemas/typeDefs.js';
-import { resolvers } from './schemas/resolvers.js';
+import type { Request, Response } from 'express';
+import { typeDefs, resolvers } from './schemas/index.js';
+import { authenticateToken } from './utils/auth.js';
+import db from './config/connection.js';
 
-async function startApolloServer() {
-  const app = express();
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers
-  });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
+const startApolloServer = async () => {
   await server.start();
-
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  // Apply Apollo GraphQL middleware and specify the path
-  app.use('/graphql', expressMiddleware(server, {
-    context: async ({ req }) => ({ req })  // if you have authentication or other context setup
-  }));
+  await db(); // Connect to the database
 
   const PORT = process.env.PORT || 3001;
+  const app = express();
+
+  // Middleware to parse incoming requests
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.json());
+
+  // Apply GraphQL middleware with context for authentication
+  app.use(
+    '/graphql',
+    expressMiddleware(server, {
+      context: ({ req }) => authenticateToken({ req }),
+    })
+  );
+
+  // Serve static assets in production
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+
+    app.get('*', (_req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    });
+  }
+
+  // Start the server
   app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}/graphql`);
+    console.log(`API server running on port ${PORT}!`);
+    console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
   });
-}
+};
 
 startApolloServer();

@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const secretKey = process.env.JWT_SECRET_KEY || '';
+const expiration = '2h';
+
 interface JwtPayload {
   _id: unknown;
   username: string;
@@ -16,7 +19,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   if (authHeader) {
     const token = authHeader.split(' ')[1];
 
-    const secretKey = process.env.JWT_SECRET_KEY || '';
+
 
     jwt.verify(token, secretKey, (err, user) => {
       if (err) {
@@ -31,9 +34,9 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const signToken = (username: string, email: string, _id: unknown) => {
-  const payload = { username, email, _id };
-  const secretKey = process.env.JWT_SECRET_KEY || '';
 
-  return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+export const signToken = (user: { _id: string; username: string; email: string }): string => {
+  const payload = { username: user.username, email: user.email, _id: user._id };
+
+  return jwt.sign({ data: payload }, secretKey, { expiresIn: expiration });
 };
