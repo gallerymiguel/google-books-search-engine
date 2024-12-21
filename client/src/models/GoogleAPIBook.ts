@@ -6,9 +6,10 @@ export interface GoogleAPIVolumeInfo {
     smallThumbnail: string;
     thumbnail: string;
   };
+  infoLink?: string; // Add infoLink as optional
 }
 
 export interface GoogleAPIBook {
-    id: string;
-    volumeInfo: GoogleAPIVolumeInfo;
+  id: string;
+  volumeInfo: GoogleAPIVolumeInfo;
 }
