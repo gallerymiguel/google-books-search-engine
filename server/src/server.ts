@@ -25,8 +25,11 @@ const startApolloServer = async () => {
   const app = express();
   const PORT = process.env.PORT || 3001;
 
-  // Use CORS middleware with specific settings
-  app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+  // Updated CORS middleware with specific settings
+  app.use(cors({
+    origin: ['http://localhost:3000', 'https://google-books-search-engine-frontend.onrender.com'], // Add your production frontend URL here
+    credentials: true
+  }));
 
   app.use(bodyParser.json());
   app.use('/graphql', expressMiddleware(server, {
@@ -35,6 +38,7 @@ const startApolloServer = async () => {
 
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
+    
     app.get('*', (_req, res) => {
       res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
