@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import { Outlet } from 'react-router-dom';
 
 const httpLink = createHttpLink({
-  uri: 'https://google-books-search-engine-bw3g.onrender.com/',
+  uri: 'https://google-books-search-engine-bw3g.onrender.com/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
