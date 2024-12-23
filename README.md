@@ -91,13 +91,8 @@ This is a full-stack application that allows users to search for books using the
 ## Deployment
 
 The application is deployed and accessible at:
-- **Frontend**: [Frontend Deployed Link](#)
-- **Backend**: [Backend Deployed Link](#)
+- **Link**: [Render](https://google-books-search-engine-friontend.onrender.com/)
 
-To set up your own deployment:
-1. Deploy the backend to [Render](https://render.com) or another hosting service.
-2. Connect the backend to a MongoDB Atlas database.
-3. Deploy the frontend to [Netlify](https://netlify.com), [Vercel](https://vercel.com), or another platform.
 
 ## Screenshots
 

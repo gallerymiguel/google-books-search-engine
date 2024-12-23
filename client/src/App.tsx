@@ -5,8 +5,9 @@ import Navbar from './components/Navbar';
 import { Outlet } from 'react-router-dom';
 
 const httpLink = createHttpLink({
-  uri: 'https://google-books-search-engine-bw3g.onrender.com/graphql',
+  uri: process.env.REACT_APP_GRAPHQL_URI,
 });
+
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('id_token');
