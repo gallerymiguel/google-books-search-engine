@@ -27,7 +27,7 @@ const startApolloServer = async () => {
 
   // Updated CORS middleware with specific settings
   app.use(cors({
-    origin: 'https://google-books-search-engine-friontend.onrender.com/', // Add your production frontend URL here
+    origin: 'https://google-books-search-engine-bw3g.onrender.com/', // Add your production frontend URL here
     credentials: true
   }));
 
