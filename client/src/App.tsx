@@ -1,11 +1,11 @@
+// import React from 'react';
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import Navbar from './components/Navbar';
 import { Outlet } from 'react-router-dom';
 
-// Use environment variable to define the GraphQL URI
 const httpLink = createHttpLink({
-  uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
+  uri: 'http://localhost:3001/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
