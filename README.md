@@ -97,13 +97,13 @@ The application is deployed and accessible at:
 ## Screenshots
 
 ### Homepage
-![Homepage Screenshot](../book-search-engine/client/public/Homepage.png)
+![Homepage Screenshot](/client/public/Homepage.png)
 
 ### Search Results
-![Search Results Screenshot](../book-search-engine/client/public/SearchResults.png)
+![Search Results Screenshot](/client/public/SearchResults.png)
 
 ### Saved Books Page
-![Saved Books Screenshot](../book-search-engine/client/public/SavedBooks.png)
+![Saved Books Screenshot](/client/public/SavedBooks.png)
 
 ## License
 
