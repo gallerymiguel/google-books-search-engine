@@ -1,18 +1,22 @@
-import { useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
-
-import { useMutation } from '@apollo/client';
-import { LOGIN_USER } from '../utils/mutations';
-import Auth from '../utils/auth';
-import type { User } from '../models/User';
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import { useMutation } from "@apollo/client";
+import { LOGIN_USER } from "../utils/mutations";
+import Auth from "../utils/auth";
+import type { User } from "../models/User";
 
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
 const LoginForm = ({}: { handleModalClose: () => void }) => {
-  const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
+  const [userFormData, setUserFormData] = useState<User>({
+    username: "",
+    email: "",
+    password: "",
+    savedBooks: [],
+  });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Use Apollo's useMutation hook for login
   const [login, { error }] = useMutation(LOGIN_USER);
 
@@ -29,11 +33,17 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+      return;
     }
 
     try {
+      setIsSubmitting(true); // Set submitting state to true
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay
       const { data } = await login({
-        variables: { email: userFormData.email, password: userFormData.password },
+        variables: {
+          email: userFormData.email,
+          password: userFormData.password,
+        },
       });
 
       const token = data.login.token;
@@ -41,20 +51,26 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
     } catch (err) {
       console.error(err);
       setShowAlert(true);
-    }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-      savedBooks: [],
-    });
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
+      setUserFormData({
+        username: "",
+        email: "",
+        password: "",
+        savedBooks: [],
+      });
+    };
   };
 
   return (
     <>
       <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
-        <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert || Boolean(error)} variant="danger">
+        <Alert
+          dismissible
+          onClose={() => setShowAlert(false)}
+          show={showAlert || Boolean(error)}
+          variant="danger"
+        >
           Something went wrong with your login credentials!
         </Alert>
         <Form.Group className="mb-3">
@@ -64,10 +80,12 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
             placeholder="Your email"
             name="email"
             onChange={handleInputChange}
-            value={userFormData.email || ''}
+            value={userFormData.email || ""}
             required
           />
-          <Form.Control.Feedback type="invalid">Email is required!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Email is required!
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-3">
@@ -77,17 +95,26 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
             placeholder="Your password"
             name="password"
             onChange={handleInputChange}
-            value={userFormData.password || ''}
+            value={userFormData.password || ""}
             required
           />
-          <Form.Control.Feedback type="invalid">Password is required!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Password is required!
+          </Form.Control.Feedback>
         </Form.Group>
         <Button
           disabled={!(userFormData.email && userFormData.password)}
           type="submit"
           variant="success"
         >
-          Submit
+          {isSubmitting ? (
+            <>
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"/>
+              Lodding in...
+            </>
+          ) : (
+          'Submit'
+          )}
         </Button>
       </Form>
     </>
