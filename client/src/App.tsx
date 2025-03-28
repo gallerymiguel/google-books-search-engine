@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import { Outlet } from 'react-router-dom';
 
 const httpLink = createHttpLink({
+  // uri: 'http://localhost:3001/graphql', // Remember to change this back to the production URL when deploying
   uri: 'https://google-books-search-engine-bw3g.onrender.com/graphql',
 });
 

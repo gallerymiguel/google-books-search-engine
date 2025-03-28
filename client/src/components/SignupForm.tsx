@@ -15,7 +15,6 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
-
   // Use Apollo Client's useMutation hook
   const [addUser, { error }] = useMutation(ADD_USER);
 
